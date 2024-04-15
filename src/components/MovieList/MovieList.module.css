@@ -1,0 +1,21 @@
+.boxList {
+  margin-top: 25px;
+}
+
+.listMovies {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+
+.itemMovies {
+  text-decoration: none;
+}
+
+.titleMovie {
+  margin-top: 8px;
+  text-align: center;
+  color: rgb(190, 180, 180);
+}

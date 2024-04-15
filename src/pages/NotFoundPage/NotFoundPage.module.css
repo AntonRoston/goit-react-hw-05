@@ -1,0 +1,22 @@
+.notFound {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 40px;
+  gap: 20px;
+}
+
+.btnHome {
+  border: none;
+  padding: 15px;
+  border-radius: 15px;
+  background-color: gray;
+  text-decoration: none;
+  color: black;
+}
+
+.btnHome:hover {
+  background-color: #fff;
+  border: 1px solid black;
+}
