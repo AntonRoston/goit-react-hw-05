@@ -2,7 +2,10 @@ import { Route, Routes } from "react-router-dom";
 
 import { Suspense, lazy } from "react";
 import Loader from "../Loader/Loader";
-import Layout from "../Layout/Layout";
+// import Layout from "../Layout/Layout";
+import Navigation from "../Navigation/Navigation";
+import MovieCast from "../MovieCast/MovieCast";
+import MovieReviews from "../MovieReviews/MovieReviews";
 
 const HomePage = lazy(() => import("../../pages/HomePage/HomePage"));
 const MoviesPage = lazy(() => import("../../pages/MoviesPage/MoviesPage"));
@@ -16,19 +19,20 @@ const NotFoundPage = lazy(() =>
 
 const App = () => {
   return (
-    <Layout>
+    <>
+      <Navigation />
       <Suspense fallback={<Loader />}>
         <Routes>
-          <Route path="/" element={<HomePage />}></Route>
-          <Route path="/movies" element={<MoviesPage />}></Route>
-          <Route
-            path="/movies/:movieId/*"
-            element={<MovieDetailsPage />}
-          ></Route>
-          <Route path="*" element={<NotFoundPage />}></Route>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/movies" element={<MoviesPage />} />
+          <Route path="/movies/:movieId" element={<MovieDetailsPage />}>
+            <Route path="cast" element={<MovieCast />} />
+            <Route path="reviews" element={<MovieReviews />} />
+          </Route>
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Suspense>
-    </Layout>
+    </>
   );
 };
 
