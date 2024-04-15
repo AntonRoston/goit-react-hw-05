@@ -2,33 +2,30 @@ import { useEffect, useState } from "react";
 import { ApiMovieRewiews } from "../ApiService/ApiService";
 import { useParams } from "react-router-dom";
 import css from "./MovieReviews.module.css";
-
 const MovieReviews = () => {
   const { movieId } = useParams();
-  const [reviews, setReviews] = useState([]);
-
+  const [rewiews, setRewiews] = useState([]);
   useEffect(() => {
     async function fetchData() {
       try {
         const results = await ApiMovieRewiews(movieId);
-        setReviews(results);
+        setRewiews(results);
       } catch (error) {
         console.log(error);
       }
     }
     fetchData();
   }, [movieId]);
-
   return (
     <>
-      {reviews.length === 0 ? (
+      {rewiews.length === 0 ? (
         <p className={css.noResult}>
-          We do not have any reviews for this movie 😢
+          We do not have any rewiews for this movies😢
         </p>
       ) : (
-        <ul className={css.reviewsList}>
-          {reviews.map((item) => (
-            <li key={item.id} className={css.reviewsItem}>
+        <ul className={css.rewiewsList}>
+          {rewiews.results.map((item) => (
+            <li key={item.id} className={css.rewiewsItem}>
               <p>{item.author}</p>
               <p>{item.content}</p>
             </li>
