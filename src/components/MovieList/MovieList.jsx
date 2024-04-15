@@ -1,23 +1,21 @@
 import { Link, useLocation } from "react-router-dom";
 import css from "./MovieList.module.css";
-const img = "https://image.tmdb.org/t/p/w500";
+const img = "https://image.tmdb.org/t/p/w400";
 
 const MovieList = ({ movies }) => {
   const location = useLocation();
   return (
-    <div className={css.boxList}>
-      <ul className={css.listMovies}>
-        {movies.map((item) => (
-          <li key={item.id}>
+    <div className={css.movieWrap}>
+      <ul className={css.movieList}>
+        {movies.map(({id, poster_path}) => (
+          <li key={id}>
             <Link
-              to={`/movies/${item.id}`}
+              to={`/movies/${id}`}
               className={css.itemMovies}
               state={location}
             >
-              <img src={img + item.backdrop_path} alt="" />
-              <h2 className={css.titleMovie}>
-                {item.original_title} {`(${item.release_date.slice(0, 4)})`}
-              </h2>
+              <img src={img + poster_path} alt="" />
+              
             </Link>
           </li>
         ))}

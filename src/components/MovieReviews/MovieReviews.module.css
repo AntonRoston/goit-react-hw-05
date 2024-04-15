@@ -1,15 +1,18 @@
-.noResult {
-  font-weight: 600;
-}
-
-.rewiewsList {
+.reviewsList {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 24px;
 }
 
-.rewiewsItem {
-  padding: 10px;
-  border: 1px solid black;
-  border-radius: 20px;
+.reviewsItem {
+  font-size: 16px;
+    padding: 16px 0;
+    border-top: 3px solid;
+  border-bottom: 3px solid;
+ }
+
+.author {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
 }

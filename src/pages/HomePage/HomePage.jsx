@@ -1,33 +1,37 @@
 import { useEffect, useState } from "react";
-
-import { ApiTrendingMovies } from "../../components/ApiService/ApiService";
-import MovieList from "../../components/MovieList/MovieList";
-import css from "./HomePage.module.css";
+import { getTrendingMovies } from "../../apiService/moveis";
+import css from './HomePage.module.css';
 import Loader from "../../components/Loader/Loader";
+import MovieList from "../../components/MovieList/MovieList";
+import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
+
 const HomePage = () => {
   const [movies, setMovies] = useState([]);
-  const [loader, setLoader] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    async function fetchData() {
+    const fetchData = async () => {
+      setIsLoading(true);
+
       try {
-        setLoader(true);
-        const { results } = await ApiTrendingMovies();
+          const { results } = await getTrendingMovies();
         setMovies(results);
       } catch (error) {
-        console.log(error);
+        setError(error);
       } finally {
-        setLoader(false);
+        setIsLoading(false);
       }
-    }
+    };
     fetchData();
   }, []);
-
+    
   return (
     <>
       <h1 className={css.title}>Trending Today</h1>
-      {loader && <Loader />}
-      <MovieList movies={movies} />
+          {isLoading && <Loader />}
+          {error && <ErrorMessage />}
+          {movies.length > 0 && <MovieList movies={movies} />}
     </>
   );
 };

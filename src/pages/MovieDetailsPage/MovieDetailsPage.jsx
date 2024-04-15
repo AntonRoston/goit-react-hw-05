@@ -1,88 +1,104 @@
-import { useEffect, useRef, useState } from "react";
-import { Link, Route, Routes, useLocation, useParams } from "react-router-dom";
-import { ApiMovieDetails } from "../../components/ApiService/ApiService";
-import MovieCast from "../../components/MovieCast/MovieCast";
-import MovieReviews from "../../components/MovieReviews/MovieReviews";
-import css from "./MovieDetailsPage.module.css";
-const img = "https://image.tmdb.org/t/p/w500";
+import { useEffect, useRef, useState } from 'react';
+import {
+  Link,
+  NavLink,
+  Outlet,
+  useLocation,
+  useParams,
+} from 'react-router-dom';
+import MovieCast from '../../components/MovieCast/MovieCast';
+import MovieReviews from '../../components/MovieReviews/MovieReviews';
+import css from './MovieDetailsPage.module.css';
+import { getMovieDetails } from '../../apiService/moveis';
+import { IoIosArrowRoundBack } from 'react-icons/io';
+import Loader from '../../components/Loader/Loader';
+import ErrorMessage from '../../components/ErrorMessage/ErrorMessage';
+const img = 'https://image.tmdb.org/t/p/w500';
 
 const MovieDetailsPage = () => {
   const { movieId } = useParams();
   const [movie, setMovie] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const location = useLocation();
-  const linkBack = useRef(location.state ?? "/");
+  const linkBack = useRef(location.state ?? '/');
 
   useEffect(() => {
+    if (!movieId) return;
+
     async function fetchData() {
+      setIsLoading(true);
       try {
-        const results = await ApiMovieDetails(movieId);
+        const results = await getMovieDetails(movieId);
         setMovie(results);
       } catch (error) {
-        console.log(error);
+        setError(error);
+      } finally {
+        setIsLoading(false);
       }
     }
     fetchData();
   }, [movieId]);
+
   return (
-    <div>
-      <div className={css.detailsMovies}>
-        <div className={css.leftBox}>
-          <img
-            src={img + movie.poster_path}
-            alt={movie.original_title}
-            width={300}
-          />
-          <Link className={css.goBack} to={linkBack.current}>
-            Go Back
-          </Link>
-          <h1 className={css.title}>{movie.original_title}</h1>
-        </div>
-        <div className={css.infoBox}>
-          <p className={css.score}>User Score: {movie.vote_average * 10}%</p>
-          <h2>Overwiew</h2>
-          <p className={css.overview}>{movie.overview}</p>
-          <h2>Genres</h2>
-          {movie.genres && (
-            <p className={css.genres}>
-              {movie.genres.map((genre) => genre.name).join(", ")}
-            </p>
-          )}
-          <div>
-            <h2 className={css.titleCompany}>Company</h2>
-            <div className={css.companyBox}>
-              {movie.production_companies &&
-                movie.production_companies.map((path) => (
-                  <div key={path.id} className={css.companyItem}>
-                    <div className={css.companyItem}>
-                      <h3 className={css.companyName}>{path.name}</h3>
-                      <img src={img + path.logo_path} width={200} />
-                    </div>
-                  </div>
-                ))}
+    <>
+      <Link className={css.goBack} to={linkBack.current}>
+        <IoIosArrowRoundBack size={30} />
+        Go Back
+      </Link>
+      {isLoading && <Loader />}
+      {error && <ErrorMessage />}
+      {!isLoading && !error && (
+        <div className={css.moveiDetailsWrap}>
+          <div className={css.detailsMovies}>
+            <div>
+              <img
+                src={img + movie.poster_path}
+                alt={movie.original_title}
+                width={300}
+              />
+            </div>
+            <div>
+              <h1 className={css.title}>{movie.original_title}</h1>
+
+              <p className={css.userScore}>
+                User score:{' '}
+                {parseInt(parseFloat(Number(movie.vote_average)) * 10)}%
+              </p>
+              <h2 className={css.subtitle}>Overwiew</h2>
+              <p className={css.text}>{movie.overview}</p>
+              <h2 className={css.subtitle}>Genres</h2>
+              {movie.genres && (
+                <p className={css.text}>
+                  {movie.genres.map(genre => genre.name).join(' ')}
+                </p>
+              )}
             </div>
           </div>
+          <div className={css.aditionalInfoWrap}>
+            <h2 className={css.infoTitle}>Additional information</h2>
+            <ul className={css.infoList}>
+              <li>
+                <NavLink to="cast" element={<MovieCast />} className={css.link}>
+                  Cast
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="reviews"
+                  element={<MovieReviews />}
+                  className={css.link}
+                >
+                  Reviews
+                </NavLink>
+              </li>
+            </ul>
+
+            <Outlet />
+          </div>
         </div>
-      </div>
-      <div>
-        <h3 className={css.aditionalInfo}>Aditional information</h3>
-        <div className={css.boxDetailes}>
-          <Link className={css.itemDetailes} to="cast" state={linkBack.current}>
-            Cast
-          </Link>
-          <Link
-            className={css.itemDetailes}
-            to="reviews"
-            state={linkBack.current}
-          >
-            Rewiews
-          </Link>
-        </div>
-        <Routes>
-          <Route path="cast" element={<MovieCast />}></Route>
-          <Route path="reviews" element={<MovieReviews />}></Route>
-        </Routes>
-      </div>
-    </div>
+      )}
+    </>
   );
 };
 

@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
-import { ApiMovieSearch } from "../../components/ApiService/ApiService";
 import MovieList from "../../components/MovieList/MovieList";
 import SearchForm from "../../components/SearchForm/SearchForm";
 import { useSearchParams } from "react-router-dom";
 import Loader from "../../components/Loader/Loader";
+import { getMovieBySearch } from "../../apiService/moveis";
+import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 
 const MoviesPage = () => {
   const [movies, setMovies] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [loader, setLoader] = useState(false);
+    const [isLoader, setIsLoader] = useState(false);
+    const [error, setError] = useState(null);
 
   const query = searchParams.get("query");
   const onSubmit = (value) => {
@@ -23,25 +25,27 @@ const MoviesPage = () => {
     if (query === "" || query === null) return;
     const fetchData = async () => {
       try {
-        setLoader(true);
+        setIsLoader(true);
 
-        const { results } = await ApiMovieSearch(query);
+        const { results } = await getMovieBySearch(query);
         if (results.length === 0) {
-          alert("Sorry! There is nothing found");
+          alert('Sorry, nothing was found for your query');
         }
         setMovies(results);
       } catch (error) {
-        console.log(error);
+        setError(error);
       } finally {
-        setLoader(false);
+        setIsLoader(false);
       }
     };
     fetchData();
   }, [query]);
+    
   return (
     <div>
       <SearchForm onSubmit={onSubmit} />
-      {loader && <Loader />}
+          {isLoader && <Loader />}
+          {error && <ErrorMessage />}
       {movies !== null && Array.isArray(movies) && (
         <MovieList movies={movies} />
       )}

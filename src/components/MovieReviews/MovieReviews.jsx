@@ -1,33 +1,47 @@
-import { useEffect, useState } from "react";
-import { ApiMovieRewiews } from "../ApiService/ApiService";
-import { useParams } from "react-router-dom";
-import css from "./MovieReviews.module.css";
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import css from './MovieReviews.module.css';
+import { getMovieReviews } from '../../apiService/moveis';
+import Loader from '../Loader/Loader';
+import ErrorMessage from '../ErrorMessage/ErrorMessage';
+
 const MovieReviews = () => {
   const { movieId } = useParams();
-  const [rewiews, setRewiews] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     async function fetchData() {
+      if (!movieId) return;
+      setIsLoading(true);
       try {
-        const results = await ApiMovieRewiews(movieId);
-        setRewiews(results);
+        const results = await getMovieReviews(movieId);
+        setReviews(results.results);
       } catch (error) {
-        console.log(error);
+        setError(error);
+      } finally {
+          setIsLoading(false);
       }
     }
-    fetchData();
+      fetchData();
+      
   }, [movieId]);
-  return (
-    <>
-      {rewiews.length === 0 ? (
-        <p className={css.noResult}>
-          We do not have any rewiews for this movies😢
+  
+    return (
+      <>
+          {isLoading && <Loader />}
+          {error && <ErrorMessage />}
+      {reviews.length === 0 ? (
+        <p>
+          Sorry, we do not have any reviews for this movie...
         </p>
       ) : (
-        <ul className={css.rewiewsList}>
-          {rewiews.results.map((item) => (
-            <li key={item.id} className={css.rewiewsItem}>
-              <p>{item.author}</p>
-              <p>{item.content}</p>
+        <ul className={css.reviewsList}>
+          {reviews.map(({id, author, content}) => (
+            <li key={id} className={css.reviewsItem}>
+              <p className={css.author}>{author}</p>
+              <p>{content}</p>
             </li>
           ))}
         </ul>
